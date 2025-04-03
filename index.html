@@ -40,7 +40,9 @@
         .container {
             max-width: 100%;
             margin: 0 auto;
-            padding: 0 5px;
+            padding: 0 5px
+
+;
             display: none; /* 預設隱藏 */
         }
         .container.active {
@@ -86,7 +88,7 @@
         .selected {
             background: #e74c3c;
             color: #fff;
-            border-color: #c0392b;
+            border: #c0392b;
             box-shadow: 0 2px 5px rgba(231, 76, 60, 0.3);
         }
         .disabled {
@@ -490,20 +492,18 @@
                 window.open('https://my-booking-app-backend.onrender.com/auth/google', '_blank');
             };
 
-            // 監聽自定義 URL（模擬 Cordova 的 handleOpenURL）
-            window.handleOpenURL = function(url) {
-                console.log('Received URL:', url);
-                if (url.includes('mybookingapp://booking?token=')) {
-                    const token = new URL(url).searchParams.get('token');
-                    console.log('Extracted token:', token);
-                    // 顯示登入成功提示
-                    document.getElementById('login-status').textContent = '登入成功！';
-                    fetchCalendarEvents(token);
-                } else {
-                    console.log('URL does not match expected format:', url);
-                    document.getElementById('login-status').textContent = '登入失敗：無效的回調 URL';
-                }
-            };
+            // 從 URL 查詢參數中獲取 token
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            const error = urlParams.get('error');
+            if (token) {
+                console.log('Extracted token:', token);
+                document.getElementById('login-status').textContent = '登入成功！';
+                fetchCalendarEvents(token);
+            } else if (error) {
+                console.log('Authentication error:', error);
+                document.getElementById('login-status').textContent = '登入失敗：' + error;
+            }
         };
 
         async function fetchCalendarEvents(token) {
